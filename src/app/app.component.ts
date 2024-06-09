@@ -1,12 +1,6 @@
-import { Component } from '@angular/core';
+import { Component,ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Carousel } from 'flowbite';
-import type {
-  CarouselItem,
-  CarouselOptions,
-  CarouselInterface,
-} from 'flowbite';
-import type { InstanceOptions } from 'flowbite';
+
 
 
 @Component({
@@ -18,36 +12,30 @@ import type { InstanceOptions } from 'flowbite';
 })
 export class AppComponent {
   title = 'my-angular-tailwind';
-  currentSlide = 0;
-  slides = [
-    'image1.jpg',
-    'image2.jpg',
-    'image3.jpg'
-  ];
-products: any;
-  constructor() { }
+item: any;
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) { }
 
+  ngAfterViewInit(): void {
+    // Accessing the carousel element
+    const carouselElement = this.elementRef.nativeElement.querySelector('#controls-carousel');
+
+    // Creating carousel items
+    for (let i = 0; i < 5; i++) {
+      const carouselItem = this.renderer.createElement('div');
+      this.renderer.addClass(carouselItem, 'hidden');
+      this.renderer.setAttribute(carouselItem, 'data-carousel-item', '');
+      carouselElement.appendChild(carouselItem);
+    }
+  }
+  carouselItems: { imageSrc: string }[] = [];
   ngOnInit(): void {
-    this.showSlide(this.currentSlide);
-    setInterval(() => {
-      this.nextSlide();
-    }, 5000); // เปลี่ยนภาพทุก 5 วินาที
+    // Initialize carousel items with image sources
+    this.carouselItems = [
+      { imageSrc: '/assets/sheep.png' },
+      { imageSrc: '/assets/sheep.png' },
+      { imageSrc: '/assets/sheep.png' },
+      { imageSrc: '/assets/sheep.png' },
+      { imageSrc: '/assets/sheep.png' }
+    ];
   }
-
-  showSlide(index: number) {
-    const items = document.querySelectorAll('.carousel-item') as NodeListOf<HTMLElement>;
-    items.forEach(item => {
-      item.classList.remove('opacity-100');
-      item.classList.add('opacity-0');
-    });
-    items[index].classList.remove('opacity-0');
-    items[index].classList.add('opacity-100');
-  }
-
-  nextSlide() {
-    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-    this.showSlide(this.currentSlide);
-  }
-
-  
 }
